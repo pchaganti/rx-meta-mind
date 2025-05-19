@@ -18,7 +18,7 @@ class ToMAgent(BaseAgent):
         """
         super().__init__(config, llm_interface)
         self.social_memory = social_memory_interface
-        self.hypothesis_count_k = config.get("hypothesis_count_k", 7) # Ensure this key matches your config# Ensure this key matches your config
+        self.hypothesis_count_k = config.get("hypothesis_count_k", 7) # Ensure this key matches your config
         # Initialize self.tom_prompts here if _contextual_analysis is to be used
         self.tom_prompts = TOM_AGENT_PROMPTS 
 
@@ -28,7 +28,7 @@ class ToMAgent(BaseAgent):
         
         Args:
             user_input: Current user utterance.
-            conversation_context: Previous conversation hi# story.
+            conversation_context: Previous conversation history.
             
         Returns:
             A list of candidate mental state hypotheses.
@@ -36,12 +36,12 @@ class ToMAgent(BaseAgent):
         # commonsense_interpretations = self._contextual_analysis(user_input, conversation_context)
         hypotheses = []
         formatted_context = self._format_conversation_context(conversation_context)
-        social_memory_summary = str(self.social_memory.get_summary(user_id="default_user")) 
+        social_memory_summary = str(self.social_memory.get_summary(user_id="default_user")) # Or a more structured summary
 
         for i in range(self.hypothesis_count_k):
             current_focus_type = self._get_next_hypothesis_type_focus(i)
             prompt = self._format_prompt(
-                template=self.tom_prompts["mental_state_hypothesis_generation"], 
+                template=self.tom_prompts["mental_state_hypothesis_generation"], # Use the specific prompt key
                 u_t=user_input,
                 C_t=formatted_context,
                 M_t=social_memory_summary,
