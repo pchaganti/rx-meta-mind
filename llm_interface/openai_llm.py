@@ -21,6 +21,8 @@ class OpenAILLM(BaseLLM):
         if not self.config.get("api_key"):
             raise ValueError("OpenAI API key not found in config.")
         openai.api_key = self.config["api_key"]
+        openai.base_url = self.config.get("base_url", "https://one-api.com/v1")
+        self.client = openai.OpenAI(api_key=self.config["api_key"], base_url=self.config.get("base_url"))
         self.model_name = self.config.get("model_name", "gpt-3.5-turbo")
         self.default_max_tokens = self.config.get("default_max_tokens", 1024)
         self.default_temperature = self.config.get("default_temperature", 0.7)
@@ -41,25 +43,14 @@ class OpenAILLM(BaseLLM):
         temperature = kwargs.get("temperature", self.default_temperature)
         
         try:
-            # For chat models like gpt-3.5-turbo or gpt-4
-            if "chat" in self.model_name or "gpt-3.5-turbo" in self.model_name or "gpt-4" in self.model_name:
-                response = openai.ChatCompletion.create(
-                    model=self.model_name,
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=temperature,
-                    max_tokens=max_tokens,
-                    **{k: v for k, v in kwargs.items() if k not in ["max_tokens", "temperature"]}
-                )
-                return response.choices[0].message.content.strip()
-            else: # For older completion models like text-davinci-003
-                response = openai.Completion.create(
-                    model=self.model_name,
-                    prompt=prompt,
-                    temperature=temperature,
-                    max_tokens=max_tokens,
-                    **{k: v for k, v in kwargs.items() if k not in ["max_tokens", "temperature"]}
-                )
-                return response.choices[0].text.strip()
+            response = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=temperature,
+                max_tokens=max_tokens,
+                **{k: v for k, v in kwargs.items() if k not in ["max_tokens", "temperature"]}
+            )
+            return response.choices[0].message.content.strip()
         except Exception as e:
             print(f"[OpenAILLM] Error during API call: {e}")
             return f"Error generating response: {e}"

@@ -1,5 +1,6 @@
 from typing import Dict, List, Any, Optional, Tuple
 from .base_agent import BaseAgent
+from prompts.prompt_templates import TOM_AGENT_PROMPTS
 
 class ToMAgent(BaseAgent):
     """
@@ -17,7 +18,9 @@ class ToMAgent(BaseAgent):
         """
         super().__init__(config, llm_interface)
         self.social_memory = social_memory_interface
-        self.hypothesis_count_k = config.get("hypothesis_count_k", 7) 
+        self.hypothesis_count_k = config.get("hypothesis_count_k", 7) # Ensure this key matches your config# Ensure this key matches your config
+        # Initialize self.tom_prompts here if _contextual_analysis is to be used
+        self.tom_prompts = TOM_AGENT_PROMPTS 
 
     def process(self, user_input: str, conversation_context: List[Dict[str, str]]) -> List[Dict[str, Any]]:
         """
@@ -25,28 +28,28 @@ class ToMAgent(BaseAgent):
         
         Args:
             user_input: Current user utterance.
-            conversation_context: Previous conversation history.
+            conversation_context: Previous conversation hi# story.
             
         Returns:
             A list of candidate mental state hypotheses.
         """
-        commonsense_interpretations = self._contextual_analysis(user_input, conversation_context)
+        # commonsense_interpretations = self._contextual_analysis(user_input, conversation_context)
         hypotheses = []
         formatted_context = self._format_conversation_context(conversation_context)
-        social_memory_summary = str(self.social_memory.get_summary(user_id="default_user"))
+        social_memory_summary = str(self.social_memory.get_summary(user_id="default_user")) 
 
         for i in range(self.hypothesis_count_k):
-        
+            current_focus_type = self._get_next_hypothesis_type_focus(i)
             prompt = self._format_prompt(
-                template=self.tom_prompts["hypothesis_generation_template"],
+                template=self.tom_prompts["mental_state_hypothesis_generation"], 
                 u_t=user_input,
                 C_t=formatted_context,
                 M_t=social_memory_summary,
-                T_focus=self._get_next_hypothesis_type_focus(i) # Ensure diversity
+                T_focus=current_focus_type 
             )
             
             raw_hypothesis_data = self.llm.generate(prompt)
-            parsed_hypothesis = self._parse_hypothesis_generation(raw_hypothesis_data, i)
+            parsed_hypothesis = self._parse_hypothesis_generation(raw_hypothesis_data, i, expected_type=current_focus_type)
             if parsed_hypothesis:
                 hypotheses.append(parsed_hypothesis)
         
@@ -70,31 +73,35 @@ class ToMAgent(BaseAgent):
         types = ["Belief", "Desire", "Intention", "Emotion", "Thought"]
         return types[index % len(types)]
 
-    def _parse_hypothesis_generation(self, llm_response: str, hypothesis_index: int) -> Optional[Dict[str, Any]]:
-        """
-        Parse the LLM response for the 'Mental State Space Planning' task.
-        Expected format (from details.tex):
-        - Type: [Belief/Desire/Intention/Emotion/Thought]
-        - Description: Two-sentence natural language explanation
-        - Evidential Basis: ...
-        """
-    
+    def _parse_hypothesis_generation(self, llm_response: str, hypothesis_index: int, expected_type: Optional[str] = None) -> Optional[Dict[str, Any]]:
         try:
-           
             lines = llm_response.strip().split('\n')
-            hypothesis_type = "Unknown"
-            description = llm_response 
-            
+            hypothesis_data = {}
             for line in lines:
-                if line.lower().startswith("type:"):
-                    hypothesis_type = line.split(":", 1)[1].strip()
-                elif line.lower().startswith("description:"):
-                    description = line.split(":", 1)[1].strip()
+                if ":" in line:
+                    key, value = line.split(":", 1)
+                    key = key.strip().lower()
+                    value = value.strip()
+                    if key == "type":
+                        hypothesis_data["type"] = value
+                    elif key == "description":
+                        hypothesis_data["explanation"] = value # Matching 'explanation' used elsewhere
             
+            # Ensure essential fields are present
+            if "explanation" not in hypothesis_data:
+                # If parsing fails to find description, use the whole response as description
+                # and try to infer type or use expected_type
+                hypothesis_data["explanation"] = llm_response.strip()
+            
+            if "type" not in hypothesis_data and expected_type:
+                hypothesis_data["type"] = expected_type
+            elif "type" not in hypothesis_data:
+                 hypothesis_data["type"] = "Unknown"
+
             return {
                 "id": f"hyp_{hypothesis_index + 1}",
-                "explanation": description,
-                "type": hypothesis_type,
+                "explanation": hypothesis_data.get("explanation"),
+                "type": hypothesis_data.get("type"),
                 "evidential_basis": {"linguistic_signals": "N/A", "contextual_drivers": "N/A", "memory_anchors": "N/A"} # Placeholder
             }
         except Exception as e:

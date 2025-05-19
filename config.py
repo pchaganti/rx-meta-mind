@@ -2,7 +2,8 @@
 
 # LLM API settings
 LLM_CONFIG = {
-    "api_key": "your_api_key_here",
+    "api_key": "sk-jBKKpw1tPxz7zX9962F886Fa222f41E8AbF800D273B22a17",
+    "base_url": "http://115.182.62.174:18888/v1",
     "model_name": "gpt-4o",
     "temperature": 0.7,
     "max_tokens": 1000

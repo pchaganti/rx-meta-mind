@@ -87,7 +87,7 @@ class SocialMemory:
             )
             interaction_summary_text = self.llm.generate(summary_prompt, max_tokens=150).strip()
             if interaction_summary_text:
-                self.add_interaction_summary(user_id, interaction_summary_text, from_llm=True)
+                self.add_interaction(user_id, interaction_summary_text, from_llm=True)
         except Exception as e:
             logger.error(f"[SocialMemory] LLM failed to summarize interaction for user {user_id}: {e}")
 
@@ -124,7 +124,7 @@ class SocialMemory:
         )
         return sorted_markers[:limit]
 
-    def add_interaction_summary(self, user_id: str, summary: str, tags: Optional[List[str]] = None, from_llm: bool = False):
+    def add_interaction(self, user_id: str, summary: str, tags: Optional[List[str]] = None, from_llm: bool = False):
         self._ensure_user_memory_exists(user_id)
         interaction = {
             "summary": summary,
@@ -145,7 +145,7 @@ class SocialMemory:
         )
         return sorted_interactions[:limit]
 
-    def get_summary_for_prompt(self, user_id: str, max_preferences: int = 5, max_emotions: int = 3, max_interactions: int = 3) -> str:
+    def get_summary(self, user_id: str, max_preferences: int = 5, max_emotions: int = 3, max_interactions: int = 3) -> str:
         """
         Generates a consolidated summary of a user's social memory using an LLM for use in prompts.
         """

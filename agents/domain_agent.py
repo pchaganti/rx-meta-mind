@@ -1,8 +1,7 @@
 from typing import Dict, List, Any, Tuple
 import math # For log in information gain calculation
 from .base_agent import BaseAgent
-from ..prompts.prompt_templates import DOMAIN_AGENT_PROMPTS
-from ..config.rule_config import DOMAIN_RULES
+from prompts.prompt_templates import DOMAIN_AGENT_PROMPTS
 
 class DomainAgent(BaseAgent):
     """
@@ -22,7 +21,6 @@ class DomainAgent(BaseAgent):
         self.social_memory = social_memory_interface
         self.lambda_weight = config.get("lambda_weight", 0.6)
         self.domain_prompts = DOMAIN_AGENT_PROMPTS
-        self.domain_rules = DOMAIN_RULES # Load domain rules
         self.epsilon = 1e-9 # Small constant for log stability
 
     def process(self, hypotheses: List[Dict[str, Any]], user_input: str, 
@@ -42,7 +40,7 @@ class DomainAgent(BaseAgent):
         for h_i in hypotheses:
             # Step 1: Domain Constraint Refinement Task
             # This would involve specific prompts for cultural, ethical, role-based rules.
-            refined_h_i = self._refine_hypothesis_with_constraints(h_i, self.domain_rules)
+            refined_h_i = self._refine_hypothesis_with_constraints(h_i)
             refined_h_i["original_hypothesis_id"] = h_i.get("id")
             refined_hypotheses.append(refined_h_i)
         
@@ -51,7 +49,7 @@ class DomainAgent(BaseAgent):
         
         return selected_hypothesis
 
-    def _refine_hypothesis_with_constraints(self, hypothesis: Dict[str, Any], domain_rules: Dict[str, Any]) -> Dict[str, Any]:
+    def _refine_hypothesis_with_constraints(self, hypothesis: Dict[str, Any], domain_rules: Dict[str, Any] = {}) -> Dict[str, Any]:
         """
         Refine a single hypothesis based on domain rules.
         (Corresponds to 'Domain Constraint Refinement Task' in details.tex)
@@ -59,8 +57,10 @@ class DomainAgent(BaseAgent):
         # Placeholder for actual implementation using LLM and specific prompts for each rule type.
         prompt = self._format_prompt(
             self.domain_prompts["constraint_refinement"],
-            h_i=hypothesis["explanation"],
-            domain_rule_type="Cultural", # Example, this would iterate or be chosen smartly
+            h_i_explanation=hypothesis["explanation"],
+            h_i_type=hypothesis["type"],
+            h_i_id=hypothesis.get("id", "N/A"),
+            domain_rule_type="Cultural",
             constraint_specifications=str(domain_rules.get("cultural", []))
         )
         response = self.llm.generate(prompt)
@@ -123,6 +123,7 @@ class DomainAgent(BaseAgent):
         prompt = self._format_prompt(
             self.domain_prompts["conditional_probability"],
             h_tilde_i_explanation=hypothesis["explanation"],
+            h_tilde_i_type=hypothesis["type"],
             u_t=user_input,
             C_t=formatted_context,
             M_t=social_memory_summary
@@ -138,7 +139,8 @@ class DomainAgent(BaseAgent):
         """
         prompt = self._format_prompt(
             self.domain_prompts["prior_probability"],
-            h_tilde_i_explanation=hypothesis["explanation"]
+            h_tilde_i_explanation=hypothesis["explanation"],
+            h_tilde_i_type=hypothesis["type"]
         )
         response = self.llm.generate(prompt)
         probability = self._parse_probability_response(response)

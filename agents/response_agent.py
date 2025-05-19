@@ -1,6 +1,6 @@
 from typing import Dict, List, Any, Optional, Tuple
 from .base_agent import BaseAgent
-from ..utils.prompt_templates import RESPONSE_AGENT_PROMPTS
+from prompts.prompt_templates import RESPONSE_AGENT_PROMPTS
 
 class ResponseAgent(BaseAgent):
     """
@@ -67,8 +67,9 @@ class ResponseAgent(BaseAgent):
         """
         prompt = self._format_prompt(
             RESPONSE_AGENT_PROMPTS["response_synthesis"],
-            h_tilde=hypothesis.get("explanation", "N/A"),
-            T=hypothesis.get("type", "Unknown"),
+            h_tilde_explanation=hypothesis.get("explanation", "N/A"),
+            h_tilde_type=hypothesis.get("type", "Unknown"),
+            # T=hypothesis.get("type", "Unknown"),
             M_t=str(social_memory),
             u_t=user_input
         )
@@ -89,8 +90,9 @@ class ResponseAgent(BaseAgent):
         prompt = self._format_prompt(
             RESPONSE_AGENT_PROMPTS["response_validation"],
             o_t=response,
-            h_tilde=hypothesis.get("explanation", "N/A"),
-            T=hypothesis.get("type", "Unknown"),
+            h_tilde_explanation=hypothesis.get("explanation", "N/A"),
+            h_tilde_type=hypothesis.get("type", "Unknown"),
+            # T=hypothesis.get("type", "Unknown"),
             M_t=str(social_memory),
             C_t=formatted_context,
             u_t=user_input,
@@ -116,8 +118,9 @@ class ResponseAgent(BaseAgent):
             RESPONSE_AGENT_PROMPTS["response_optimization"],
             original_response=original_response,
             critique=critique,
-            h_tilde=hypothesis.get("explanation", "N/A"),
-            T=hypothesis.get("type", "Unknown"),
+            h_tilde_explanation=hypothesis.get("explanation", "N/A"),
+            h_tilde_type=hypothesis.get("type", "Unknown"),
+            # T=hypothesis.get("type", "Unknown"),
             u_t=user_input,
             C_t=formatted_context,
             M_t=str(social_memory)
