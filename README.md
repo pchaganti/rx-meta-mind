@@ -1,4 +1,4 @@
-# MetaMind: A Cognitively Motivated Framework for Human-Like Social Reasoning
+![metamind 001](https://github.com/user-attachments/assets/70755d93-bf0f-4a1f-b852-0568b66f8939)
 
 ## Overview
 
