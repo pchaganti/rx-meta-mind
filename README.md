@@ -1,6 +1,9 @@
-# MetaMind: A Cognitively Motivated Framework for Human-Like Social Reasoning
-
-## Overview
+![metamind 001](https://github.com/user-attachments/assets/70755d93-bf0f-4a1f-b852-0568b66f8939)
+<p align="center">
+  <a href="">
+    <img src="https://img.shields.io/badge/arXiv-Paper-b31b1b.svg" width="80px" alt="arXiv">
+  </a>
+</p>
 
 MetaMind is a novel multi-agent framework designed to endow Large Language Models (LLMs) with more human-like social reasoning capabilities. Traditional LLMs often struggle with the ambiguity and indirectness inherent in real-world human communication, failing to grasp unspoken intents, implied emotions, or culturally sensitive cues. MetaMind addresses this gap by explicitly modeling the multi-stage cognitive processes humans use to reason about unobservable mental states and navigate socially complex environments.
 
