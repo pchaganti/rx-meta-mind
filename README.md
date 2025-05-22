@@ -53,6 +53,43 @@ MetaMind is grounded in established psychological theories:
 *   Demonstrates through comprehensive evaluations significant improvements in contextual accuracy and social appropriateness in real-world scenarios, achieving state-of-the-art results on challenging benchmarks and matching human performance on key tasks.
 *   Provides in-depth ablation studies justifying the necessity of each agent and design choice for the framework's performance and generalization.
 
+## Project Structure
+
+```
+MetaMind/
+  ├── .gitignore
+  ├── README.md
+  ├── README.pdf
+  ├── agents/
+  │   ├── __init__.py
+  │   ├── base_agent.py
+  │   ├── domain_agent.py
+  │   ├── response_agent.py
+  │   └── tom_agent.py
+  ├── app.py
+  ├── config.py
+  ├── llm_interface/
+  │   ├── __init__.py
+  │   ├── base_llm.py
+  │   └── openai_llm.py
+  ├── main.py
+  ├── memory/
+  │   ├── __init__.py
+  │   └── social_memory.py
+  ├── prompts/
+  │   ├── __init__.py
+  │   └── prompt_templates.py
+  ├── requirements.txt
+  ├── static/
+  │   ├── script.js
+  │   └── style.css
+  ├── templates/
+  │   └── index.html
+  └── utils/
+      ├── __init__.py
+      └── helpers.py
+```
+
 ## Running the Project
 
 Follow these steps to get MetaMind up and running on your local machine.
