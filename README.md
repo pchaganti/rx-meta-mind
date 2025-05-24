@@ -73,7 +73,7 @@ MetaMind's architecture is built upon a layered reasoning process involving thre
 
 
 
-## Running the Project
+## Running the Project [![Website](https://img.shields.io/badge/Website-Project-blue)](https://mem0.ai/research)
 
 Follow these steps to get MetaMind up and running on your local machine.
 
