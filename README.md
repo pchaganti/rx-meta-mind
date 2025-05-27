@@ -1,6 +1,6 @@
 ![metamind 001](https://github.com/user-attachments/assets/70755d93-bf0f-4a1f-b852-0568b66f8939)
 <p align="center">
-  <a href="">
+  <a href="http://arxiv.org/abs/2505.18943">
     <img src="https://img.shields.io/badge/arXiv-Paper-b31b1b.svg" width="80px" alt="arXiv">
   </a>
 </p>
@@ -192,7 +192,7 @@ We now have a paper you can cite:
 @article{metamind,
   title={MetaMind: Modeling Human Social Thoughts with Metacognitive Multi-Agent Systems},
   author={Zhang, Xuanming and Chen, Yuxuan and Yeh, Min-Hsuan and Li, Yixuan},
-  journal={arXiv preprint arXiv:},
+  journal={arXiv preprint arXiv:2505.18943},
   year={2025}
 }
 ```
